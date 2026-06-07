@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldAlert, AlertCircle, FileWarning, HelpCircle, DollarSign, MessageSquare, ExternalLink, Copy } from 'lucide-react';
+import { ShieldAlert, AlertCircle, FileWarning, HelpCircle, DollarSign, MessageSquare, ExternalLink, Copy, CheckCircle } from 'lucide-react';
 
 interface OutputColumnProps {
     data: any;
@@ -8,6 +8,15 @@ interface OutputColumnProps {
 
 export default function OutputColumn({ data, showPrivateVent }: OutputColumnProps) {
     const [activeTab, setActiveTab] = useState<'friendly_upsell' | 'firm_pushback' | 'follow_up'>('friendly_upsell');
+    const [copiedType, setCopiedType] = useState<'reply' | 'discord' | null>(null);
+
+    const handleCopy = (text: string, type: 'reply' | 'discord') => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text);
+            setCopiedType(type);
+            setTimeout(() => setCopiedType(null), 2000);
+        }
+    };
 
     if (!data) {
         return (
@@ -153,9 +162,15 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                 </div>
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex-1 relative group">
                     <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed font-medium">{data.smart_replies?.[activeTab]}</p>
-                    <button className="absolute top-3 right-3 px-3 py-1.5 bg-white rounded-md border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 shadow-sm opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2">
-                        <Copy className="w-4 h-4" />
-                        <span className="text-xs font-bold">Copy Reply</span>
+                    <button 
+                        onClick={() => handleCopy(data.smart_replies?.[activeTab] || '', 'reply')}
+                        className="absolute top-3 right-3 px-3 py-1.5 bg-white rounded-md border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 shadow-sm opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2"
+                    >
+                        {copiedType === 'reply' ? (
+                            <><CheckCircle className="w-4 h-4 text-emerald-500" /><span className="text-xs font-bold text-emerald-600">Copied!</span></>
+                        ) : (
+                            <><Copy className="w-4 h-4" /><span className="text-xs font-bold">Copy Reply</span></>
+                        )}
                     </button>
                 </div>
             </div>
@@ -165,9 +180,15 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                 <p className="text-sm text-indigo-900 font-semibold text-center sm:text-left">
                     Got an awkward client message? Test it and share your result in Discord.
                 </p>
-                <button className="flex-none px-4 py-2 bg-white border border-indigo-200 text-indigo-700 text-sm font-black uppercase tracking-wider rounded-lg hover:bg-indigo-600 hover:text-white transition-colors flex items-center gap-2 shadow-sm">
-                    <ExternalLink className="w-4 h-4" />
-                    Copy Discord Text
+                <button 
+                    onClick={() => handleCopy(`⚠️ Scope creep risk: ${data.risk_score_percentage}%\n💸 Suggested change quote: ${data.suggested_change_quote?.label}\n🧾 Best reply angle: Friendly upsell\n\nPrivate Vent:\n"${data.private_vent_roast}"\n\nProfessional reply:\n${data.smart_replies?.['friendly_upsell']}`, 'discord')}
+                    className="flex-none px-4 py-2 bg-white border border-indigo-200 text-indigo-700 text-sm font-black uppercase tracking-wider rounded-lg hover:bg-indigo-600 hover:text-white transition-colors flex items-center gap-2 shadow-sm"
+                >
+                    {copiedType === 'discord' ? (
+                        <><CheckCircle className="w-4 h-4" /> Copied!</>
+                    ) : (
+                        <><ExternalLink className="w-4 h-4" /> Copy Discord Text</>
+                    )}
                 </button>
             </div>
             
