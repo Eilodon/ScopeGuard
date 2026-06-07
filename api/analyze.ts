@@ -1,14 +1,12 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export const config = {
   maxDuration: 30,
 };
 
-const ANTHROPIC_MODEL = 'claude-sonnet-4-6';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 const MAX_SCOPE_CHARS = 8_000;
 const MAX_REQUEST_CHARS = 3_000;
 const ALLOWED_TONES = new Set(['Friendly', 'Firm', 'Diplomatic', 'Premium', 'Short']);
@@ -214,8 +212,8 @@ async function handleAnalyzeRequest(req: Request): Promise<Response> {
     return Response.json({ error: 'Method not allowed' }, { status: 405 });
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return Response.json({ error: 'Missing ANTHROPIC_API_KEY' }, { status: 500 });
+  if (!process.env.GEMINI_API_KEY) {
+    return Response.json({ error: 'Missing GEMINI_API_KEY' }, { status: 500 });
   }
 
   try {
@@ -265,26 +263,26 @@ The reply tone must be: ${tone}. Make all smart replies follow this tone.
 Generate the ScopeGuard analysis as valid JSON only.
 `;
 
-    const message = await anthropic.messages.create({
-      model: ANTHROPIC_MODEL,
-      max_tokens: 2500,
-      temperature: 0.2,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
+    const model = genAI.getGenerativeModel({ 
+      model: GEMINI_MODEL,
+      systemInstruction: SYSTEM_PROMPT 
     });
 
-    const firstBlock = message.content[0];
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        maxOutputTokens: 2500,
+        temperature: 0.2,
+      }
+    });
 
-    if (!firstBlock || firstBlock.type !== 'text') {
-      return Response.json({ error: 'Unexpected Claude response format' }, { status: 502 });
+    const responseText = result.response.text();
+
+    if (!responseText) {
+      return Response.json({ error: 'Unexpected Gemini response format' }, { status: 502 });
     }
 
-    const parsed = extractJson(firstBlock.text);
+    const parsed = extractJson(responseText);
     const normalized = normalizeAnalysisResult(parsed, tone || 'Friendly', Boolean(privateVentEnabled));
 
     return Response.json(normalized);
