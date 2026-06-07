@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import App from '../src/App';
 import { projects } from '../src/data/mockData';
 
@@ -37,7 +37,7 @@ describe('End-to-End Flow: ScopeGuard AI', () => {
         const user = userEvent.setup();
         
         // Setup fetch to fail so we use the mock fallback for predictable testing
-        (global.fetch as any).mockRejectedValue(new Error('API offline'));
+        (global.fetch as Mock).mockRejectedValue(new Error('API offline'));
 
         render(<App />);
 
@@ -85,7 +85,7 @@ describe('End-to-End Flow: ScopeGuard AI', () => {
 
     it('should display an error toast if Live API throws error but fallback succeeds', async () => {
         const user = userEvent.setup();
-        (global.fetch as any).mockRejectedValue(new Error('Network error'));
+        (global.fetch as Mock).mockRejectedValue(new Error('Network error'));
 
         const { container } = render(<App />);
         

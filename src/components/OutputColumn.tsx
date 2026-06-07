@@ -36,10 +36,28 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
         );
     }
 
-    const isHighRisk = data.risk_level === 'high';
-    const riskColor = isHighRisk ? 'text-red-400' : 'text-amber-400';
-    const riskBg = isHighRisk ? 'bg-red-500/10 border-red-500/20' : 'bg-amber-500/10 border-amber-500/20';
-    const riskBar = isHighRisk ? 'bg-gradient-to-r from-red-500 to-rose-600' : 'bg-gradient-to-r from-amber-400 to-orange-500';
+    const riskStyles: Record<string, { label: string; color: string; bg: string; bar: string }> = {
+      high: {
+        label: 'High Risk',
+        color: 'text-red-400',
+        bg: 'bg-red-500/10 border-red-500/20',
+        bar: 'bg-gradient-to-r from-red-500 to-rose-600',
+      },
+      medium: {
+        label: 'Medium Risk',
+        color: 'text-amber-400',
+        bg: 'bg-amber-500/10 border-amber-500/20',
+        bar: 'bg-gradient-to-r from-amber-400 to-orange-500',
+      },
+      low: {
+        label: 'Low Risk',
+        color: 'text-emerald-400',
+        bg: 'bg-emerald-500/10 border-emerald-500/20',
+        bar: 'bg-gradient-to-r from-emerald-400 to-green-500',
+      },
+    };
+
+    const riskStyle = riskStyles[data.risk_level] ?? riskStyles.medium;
 
     return (
         <div className="flex flex-col gap-6 h-full animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
@@ -56,17 +74,17 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
             </div>
 
             {/* Risk Meter */}
-            <div className={`p-6 rounded-2xl border backdrop-blur-md shadow-lg ${riskBg} transition-all hover:shadow-xl`}>
+            <div className={`p-6 rounded-2xl border backdrop-blur-md shadow-lg ${riskStyle.bg} transition-all hover:shadow-xl`}>
                 <div className="flex justify-between items-center mb-3">
-                    <h2 className={`text-xl font-heading font-black ${riskColor} flex items-center gap-2`}>
+                    <h2 className={`text-xl font-heading font-black ${riskStyle.color} flex items-center gap-2`}>
                         <AlertCircle className="w-6 h-6" />
                         <span>
-                            {data.risk_score_percentage}% {isHighRisk ? 'High Risk' : 'Medium Risk'} <span className="text-sm opacity-60 font-sans font-medium">· {data.confidence_score_percentage}% AI Confidence</span>
+                            {data.risk_score_percentage}% {riskStyle.label} <span className="text-sm opacity-60 font-sans font-medium">· {data.confidence_score_percentage}% AI Confidence</span>
                         </span>
                     </h2>
                 </div>
                 <div className="w-full bg-slate-950/50 rounded-full h-2.5 mb-5 overflow-hidden shadow-inner border border-white/5">
-                    <div className={`${riskBar} h-2.5 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.3)]`} style={{ width: `${data.risk_score_percentage || 0}%` }}></div>
+                    <div className={`${riskStyle.bar} h-2.5 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.3)]`} style={{ width: `${data.risk_score_percentage || 0}%` }}></div>
                 </div>
                 <p className="text-sm font-medium text-slate-200 leading-relaxed">{data.summary}</p>
             </div>

@@ -57,7 +57,7 @@ JSON shape:
   "disclaimer": "ScopeGuard helps with business communication and scope analysis. It does not provide legal advice."
 }`;
 
-function extractJson(text: string) {
+function extractJson(text: string): Record<string, unknown> {
   const cleaned = text.trim();
 
   try {
@@ -70,6 +70,73 @@ function extractJson(text: string) {
     }
     return JSON.parse(cleaned.slice(start, end + 1));
   }
+}
+
+function normalizeAnalysisResult(parsed: Record<string, unknown>, tone: string, privateVentEnabled: boolean) {
+  const smartReplies = parsed.smart_replies as Record<string, unknown> | undefined;
+  const suggestedQuote = parsed.suggested_change_quote as Record<string, unknown> | undefined;
+  const timelineImpact = parsed.timeline_impact as Record<string, unknown> | undefined;
+
+  return {
+    scope_status: typeof parsed.scope_status === 'string' ? parsed.scope_status : 'out_of_scope',
+    risk_level: typeof parsed.risk_level === 'string' ? parsed.risk_level : 'high',
+    risk_score_percentage:
+      typeof parsed.risk_score_percentage === 'number' ? parsed.risk_score_percentage : 85,
+    confidence_score_percentage:
+      typeof parsed.confidence_score_percentage === 'number'
+        ? parsed.confidence_score_percentage
+        : 80,
+    summary:
+      typeof parsed.summary === 'string'
+        ? parsed.summary
+        : 'This request may add work outside the original project scope.',
+    evidence_highlights: Array.isArray(parsed.evidence_highlights)
+      ? parsed.evidence_highlights
+      : [],
+    out_of_scope_items: Array.isArray(parsed.out_of_scope_items)
+      ? parsed.out_of_scope_items
+      : [],
+    in_scope_items: Array.isArray(parsed.in_scope_items) ? parsed.in_scope_items : [],
+    missing_clarifications: Array.isArray(parsed.missing_clarifications)
+      ? parsed.missing_clarifications
+      : [],
+    suggested_change_quote: {
+      amount: typeof suggestedQuote?.amount === 'number' ? suggestedQuote.amount : 0,
+      currency: typeof suggestedQuote?.currency === 'string' ? suggestedQuote.currency : 'USD',
+      label: typeof suggestedQuote?.label === 'string' ? suggestedQuote.label : 'Needs review',
+      reason:
+        typeof suggestedQuote?.reason === 'string'
+          ? suggestedQuote.reason
+          : 'More details are needed before quoting.',
+    },
+    timeline_impact: {
+      days: typeof timelineImpact?.days === 'number' ? timelineImpact.days : 0,
+      label: typeof timelineImpact?.label === 'string' ? timelineImpact.label : 'Needs review',
+    },
+    private_vent_roast:
+      privateVentEnabled && typeof parsed.private_vent_roast === 'string'
+        ? parsed.private_vent_roast
+        : '',
+    smart_replies: {
+      friendly_upsell:
+        typeof smartReplies?.friendly_upsell === 'string'
+          ? smartReplies.friendly_upsell
+          : 'Thanks for the update. I can review this as a separate change request.',
+      firm_pushback:
+        typeof smartReplies?.firm_pushback === 'string'
+          ? smartReplies.firm_pushback
+          : 'This appears to be outside the current scope. I can prepare a separate quote for it.',
+      follow_up:
+        typeof smartReplies?.follow_up === 'string'
+          ? smartReplies.follow_up
+          : 'Just checking in on the change request. Let me know how you would like to proceed.',
+    },
+    disclaimer:
+      typeof parsed.disclaimer === 'string'
+        ? parsed.disclaimer
+        : 'ScopeGuard helps with business communication and scope analysis. It does not provide legal advice.',
+    selected_tone: tone,
+  };
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -130,14 +197,9 @@ Generate the ScopeGuard analysis as valid JSON only.
     }
 
     const parsed = extractJson(firstBlock.text);
+    const normalized = normalizeAnalysisResult(parsed, tone || 'Friendly', Boolean(privateVentEnabled));
 
-    if (!privateVentEnabled) {
-      parsed.private_vent_roast = '';
-    }
-    
-    parsed.selected_tone = tone || 'Friendly';
-
-    return Response.json(parsed);
+    return Response.json(normalized);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return Response.json({ error: message }, { status: 500 });

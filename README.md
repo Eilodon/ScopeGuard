@@ -63,9 +63,24 @@ For Vercel deployment, add `ANTHROPIC_API_KEY` in Project Settings → Environme
 
 ## Local Development
 
+For the frontend-only demo:
+
 ```bash
 npm install
 npm run dev
+```
+
+For the full app with the `/api/analyze` serverless function:
+
+```bash
+npm install
+npx vercel dev
+```
+
+Make sure `.env` includes:
+
+```bash
+ANTHROPIC_API_KEY=your_key_here
 ```
 
 ## Build

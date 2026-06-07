@@ -4,6 +4,7 @@ import InputColumn from './components/InputColumn';
 import OutputColumn from './components/OutputColumn';
 import { projects, getMockAnalysis } from './data/mockData';
 import type { AnalysisResult } from './types/analysis';
+import type { ReplyTone } from './data/mockData';
 
 async function analyzeWithApi({
   originalScope,
@@ -13,7 +14,7 @@ async function analyzeWithApi({
 }: {
   originalScope: string;
   clientRequest: string;
-  tone: string;
+  tone: ReplyTone;
   privateVentEnabled: boolean;
 }) {
   const response = await fetch('/api/analyze', {
@@ -54,7 +55,7 @@ export default function App() {
     const handleAnalyze = async (payload: {
       projectId: string;
       request: string;
-      tone: string;
+      tone: ReplyTone;
       privateVentEnabled: boolean;
     }) => {
       setIsAnalyzing(true);
@@ -81,12 +82,10 @@ export default function App() {
     
         setAnalysisData(data);
         setIsLiveApi(true);
-      } catch (err) {
-        console.error(err);
-    
+      } catch {
         const fallback = getMockAnalysis(payload.projectId, {
           request: payload.request,
-          tone: payload.tone as any,
+          tone: payload.tone,
         });
     
         setAnalysisData({

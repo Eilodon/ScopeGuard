@@ -6,7 +6,7 @@ interface InputColumnProps {
     onAnalyze: (payload: {
         projectId: string;
         request: string;
-        tone: string;
+        tone: ReplyTone;
         privateVentEnabled: boolean;
     }) => void;
     isAnalyzing: boolean;
