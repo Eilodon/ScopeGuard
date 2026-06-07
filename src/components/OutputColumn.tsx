@@ -68,7 +68,7 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
                     </span>
                 ) : (
                     <span className="bg-slate-800/80 text-slate-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-white/10 shadow-sm backdrop-blur-md">
-                        Demo sample loaded. Click Analyze to run live AI.
+                        Demo analysis sample
                     </span>
                 )}
             </div>
@@ -157,7 +157,7 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
                             Timeline: {data.timeline_impact.label}
                         </span>
                     </div>
-                    <p className="text-sm text-slate-300 mt-5 border-t border-emerald-500/20 pt-4 leading-relaxed">
+                    <p className="text-sm text-slate-300 mt-5 border-t border-emerald-500/20 pt-4 leading-relaxed whitespace-pre-wrap">
                         <span className="font-bold block mb-1.5 text-[10px] uppercase tracking-widest text-emerald-500">Reason</span>
                         {data.suggested_change_quote.reason}
                     </p>

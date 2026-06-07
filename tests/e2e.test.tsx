@@ -83,19 +83,17 @@ describe('End-to-End Flow: ScopeGuard AI', () => {
         });
     });
 
-    it('should display an error toast if Live API throws error but fallback succeeds', async () => {
+    it('should display a subtle demo badge if Live API throws error but fallback succeeds', async () => {
         const user = userEvent.setup();
         (global.fetch as Mock).mockRejectedValue(new Error('Network error'));
 
-        const { container } = render(<App />);
+        render(<App />);
         
         const analyzeButtons = screen.getAllByRole('button', { name: /Analyze Request/i });
         await user.click(analyzeButtons[0]);
 
-        // Using querySelector to avoid text matching issues in JSDOM with leading/trailing whitespaces
         await waitFor(() => {
-            expect(container.querySelector('.text-amber-800')).toBeInTheDocument();
-            expect(container.querySelector('.text-amber-800')?.textContent).toContain('Live AI analysis failed');
+            expect(screen.getByText('Demo analysis sample')).toBeInTheDocument();
         });
     });
 });

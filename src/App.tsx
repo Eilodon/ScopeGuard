@@ -88,12 +88,7 @@ export default function App() {
           tone: payload.tone,
         });
     
-        setAnalysisData({
-          ...fallback,
-          summary: `${fallback.summary} Demo fallback is shown because live AI analysis failed.`,
-        });
-    
-        setError('Live AI analysis failed. Showing demo fallback so the product flow remains available.');
+        setAnalysisData(fallback);
         setIsLiveApi(false);
       } finally {
         setIsAnalyzing(false);

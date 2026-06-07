@@ -79,6 +79,27 @@ export const projects: Project[] = [
         ],
         additionalWork: "$100/hour or fixed change quote after review.",
         demoClientRequest: "Can you also add an admin dashboard, mobile app version, analytics, and integrate HubSpot before launch? We need it by Friday."
+    },
+    {
+        id: "apple-clone",
+        name: "Basic Website Setup",
+        price: "$1,200",
+        included: [
+            "5-page static website",
+            "Responsive layout",
+            "Contact form",
+            "Basic SEO setup",
+            "1 week of support"
+        ],
+        excluded: [
+            "E-commerce & Payments",
+            "User accounts",
+            "Custom web app development",
+            "AI integration",
+            "Content writing"
+        ],
+        additionalWork: "$150/hour or fixed quote after review.",
+        demoClientRequest: "Hey man — quick small update, shouldn’t be a big deal.\n\nI was showing the site to my cousin (he does a bit of coding), and he mentioned this should all be pretty straightforward.\n\nCan you just:\n• Make it look exactly like Apple’s site but more unique\n• Add full payment system + subscriptions + coupons + referral logic\n• Build user + admin dashboards (with analytics, exports, etc.)\n• Rewrite all the content (keep it premium but also relatable and viral)\n• Add smooth animations everywhere (but make sure it loads instantly)\n• Set up SEO so we rank top 3 on Google\n• Integrate WhatsApp, email automation, and an AI chatbot\n• Also maybe turn this into an app later, so keep that in mind while building\n\nLet’s try to wrap this up by tomorrow evening — I have an important demo.\n\nAlso, since most of this is just small tweaks and improvements, let’s keep the budget the same for now. We’ll definitely do more work together after this if it goes well 👍"
     }
 ];
 
@@ -219,6 +240,65 @@ const analysisByProjectId: Record<string, Omit<AnalysisResult, 'analyzed_request
             friendly_upsell: "I can help with those additions, but they are outside the current SaaS MVP scope. The admin dashboard, mobile app version, analytics, and HubSpot integration would need a separate change request.\n\nA sensible starting quote is $1,200 with an 8-day timeline extension, after we confirm the exact admin, mobile, analytics, and HubSpot requirements.",
             firm_pushback: "The current MVP scope includes authentication, a user dashboard, one CRUD workflow, Stripe checkout, and Vercel deployment. Admin tooling, mobile app work, advanced analytics, and HubSpot are explicitly outside that scope.\n\nWe can either keep the current launch scope intact or define a separate paid phase for those additions.",
             follow_up: "Following up on the added SaaS requests. I can keep the MVP on the original delivery plan, or scope the admin dashboard, mobile version, analytics, and HubSpot integration as a separate $1,200 change request with an estimated 8-day extension."
+        },
+        disclaimer
+    },
+    "apple-clone": {
+        scope_status: "out_of_scope",
+        risk_level: "high",
+        risk_score_percentage: 99,
+        confidence_score_percentage: 98,
+        summary: "Severe scope creep. The client is asking to turn a marketing website into a full SaaS/e-commerce platform, while keeping the same budget and compressing delivery into tomorrow evening.",
+        evidence_highlights: [
+            {
+                client_requested: "full payment system + subscriptions",
+                original_scope_reference: "E-commerce & Payments excluded",
+                assessment: "out_of_scope"
+            },
+            {
+                client_requested: "user + admin dashboards",
+                original_scope_reference: "User accounts excluded",
+                assessment: "out_of_scope"
+            },
+            {
+                client_requested: "AI chatbot & WhatsApp automation",
+                original_scope_reference: "AI integration excluded",
+                assessment: "out_of_scope"
+            },
+            {
+                client_requested: "wrap this up by tomorrow evening",
+                original_scope_reference: "Standard timelines apply",
+                assessment: "out_of_scope"
+            },
+            {
+                client_requested: "Set up SEO so we rank top 3 on Google",
+                original_scope_reference: "SEO guarantees excluded / not realistically guaranteeable",
+                assessment: "out_of_scope"
+            },
+            {
+                client_requested: "keep the budget the same + tomorrow deadline",
+                original_scope_reference: "Commercial and timeline mismatch",
+                assessment: "out_of_scope"
+            }
+        ],
+        out_of_scope_items: ["payment system", "dashboards", "content rewrite", "top 3 SEO", "AI chatbot", "app architecture"],
+        in_scope_items: [],
+        missing_clarifications: ["enterprise budget availability", "payment gateway provider", "app platform (iOS/Android)"],
+        suggested_change_quote: {
+            amount: 3200,
+            currency: "USD",
+            label: "+$3,200",
+            reason: "Paid scope reset, technical planning, and Phase 2 proposal for the expanded product.\n\nFull implementation estimate: $25k–$45k / 8–12 weeks."
+        },
+        timeline_impact: {
+            days: 7,
+            label: "+5–7 business days"
+        },
+        private_vent_roast: "Ah yes, the classic 'my cousin said it’s easy' maneuver — where a landing page quietly becomes a SaaS platform wearing a fake mustache.",
+        smart_replies: {
+            friendly_upsell: "Hi there! Thanks for sharing these ideas — there are definitely some valuable directions here.\n\nA few of these may be small refinements, but most of the list is outside the original website scope. Payments, subscriptions, coupons, referral logic, user/admin dashboards, analytics, automations, AI chatbot, and mobile-app planning would turn this from a website project into a full product build.\n\nFor tomorrow’s demo, I recommend we keep the current scope and budget focused on the original website deliverables.\n\nIf you’d like to explore the expanded feature set, I can prepare a separate Phase 2 scope and technical plan. A paid discovery/change-scope package would be $3,200 and take 5–7 business days. After that, I can provide a proper build estimate for the full platform.",
+            firm_pushback: "Thanks for the update. While these are exciting directions, they represent a completely new product build. The current agreement covers the 5-page static website only. E-commerce systems, user dashboards, and AI chatbots are explicitly out of scope.\n\nI cannot accommodate these additions within the current budget or by tomorrow evening. I will deliver the project exactly as originally scoped for tomorrow. If you'd like to pursue these new features, I can prepare a paid discovery and Phase 2 proposal next week.",
+            follow_up: "Just checking in regarding the new feature requests. As mentioned, I will proceed with the original static site for your demo tomorrow. Let me know if you’d like to keep the scope as-is moving forward, or if you'd like me to send over the paid discovery package to properly map out the SaaS and AI expansion."
         },
         disclaimer
     }
