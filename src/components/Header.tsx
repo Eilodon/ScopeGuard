@@ -1,4 +1,3 @@
-import { ShieldAlert } from 'lucide-react';
 
 export default function Header() {
     return (
@@ -6,8 +5,8 @@ export default function Header() {
             <div className="flex items-center gap-4">
                 <div className="relative group">
                     <div className="absolute inset-0 bg-indigo-500 rounded-xl blur opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-                    <div className="relative bg-gradient-to-br from-indigo-500 to-violet-600 p-2.5 rounded-xl border border-white/20 shadow-lg">
-                        <ShieldAlert className="w-6 h-6 text-white" strokeWidth={2.5} />
+                    <div className="relative bg-gradient-to-br from-indigo-500/20 to-violet-600/20 p-1.5 rounded-xl border border-white/20 shadow-lg overflow-hidden flex items-center justify-center">
+                        <img src="/logo.png" alt="ScopeGuard Logo" className="w-8 h-8 object-contain" />
                     </div>
                 </div>
                 <div>
