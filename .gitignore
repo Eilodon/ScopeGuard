@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Project Specific
+docs/superpowers/
+.hex-skills/
+.env
+.env.*
+coverage/
