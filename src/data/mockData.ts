@@ -1,3 +1,5 @@
+import type { AnalysisResult } from '../types/analysis';
+
 export interface Project {
     id: string;
     name: string;
@@ -8,53 +10,8 @@ export interface Project {
     demoClientRequest: string;
 }
 
-export type RiskLevel = 'low' | 'medium' | 'high';
-export type ScopeStatus = 'in_scope' | 'partially_in_scope' | 'out_of_scope';
 export type ReplyTone = 'Friendly' | 'Firm' | 'Diplomatic' | 'Premium' | 'Short';
 export type ReplyTabId = 'friendly_upsell' | 'firm_pushback' | 'follow_up';
-
-export interface EvidenceHighlight {
-    client_requested: string;
-    original_scope_reference: string;
-    assessment: 'in_scope' | 'out_of_scope' | 'needs_clarification';
-}
-
-export interface ChangeQuote {
-    amount: number;
-    currency: string;
-    label: string;
-    reason: string;
-}
-
-export interface TimelineImpact {
-    days: number;
-    label: string;
-}
-
-export interface SmartReplies {
-    friendly_upsell: string;
-    firm_pushback: string;
-    follow_up: string;
-}
-
-export interface AnalysisResult {
-    scope_status: ScopeStatus;
-    risk_level: RiskLevel;
-    risk_score_percentage: number;
-    confidence_score_percentage: number;
-    summary: string;
-    evidence_highlights: EvidenceHighlight[];
-    out_of_scope_items: string[];
-    in_scope_items: string[];
-    missing_clarifications: string[];
-    suggested_change_quote: ChangeQuote;
-    timeline_impact: TimelineImpact;
-    private_vent_roast: string;
-    smart_replies: SmartReplies;
-    disclaimer: string;
-    analyzed_request: string;
-    selected_tone: ReplyTone;
-}
 
 export const projects: Project[] = [
     {

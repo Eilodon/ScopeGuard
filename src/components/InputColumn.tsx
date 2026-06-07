@@ -3,7 +3,12 @@ import type { Project, ReplyTone } from '../data/mockData';
 
 interface InputColumnProps {
     projects: Project[];
-    onAnalyze: (projectId: string, request: string, tone: ReplyTone, privateVent: boolean) => void;
+    onAnalyze: (payload: {
+        projectId: string;
+        request: string;
+        tone: string;
+        privateVentEnabled: boolean;
+    }) => void;
     isAnalyzing: boolean;
 }
 
@@ -11,7 +16,7 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
     const [selectedProject, setSelectedProject] = useState<string>(projects[0]?.id || '');
     const [clientRequest, setClientRequest] = useState(projects[0]?.demoClientRequest || '');
     const [tone, setTone] = useState<ReplyTone>('Friendly');
-    const [privateVent, setPrivateVent] = useState(false);
+    const [privateVentEnabled, setPrivateVentEnabled] = useState(false);
 
     const activeProject = projects.find(p => p.id === selectedProject);
 
@@ -25,7 +30,12 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
         : '';
 
     const handleAnalyze = () => {
-        onAnalyze(selectedProject, clientRequest, tone, privateVent);
+        onAnalyze({
+            projectId: selectedProject,
+            request: clientRequest,
+            tone,
+            privateVentEnabled
+        });
     };
 
     return (
@@ -80,17 +90,20 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                 </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-amber-50 p-3 rounded-lg border border-amber-100">
+            <div className="flex items-start gap-3 bg-amber-50 p-3 rounded-lg border border-amber-100">
                 <input 
                     type="checkbox" 
                     id="privateVent"
-                    className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
-                    checked={privateVent}
-                    onChange={(e) => setPrivateVent(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 text-amber-600 rounded focus:ring-amber-500"
+                    checked={privateVentEnabled}
+                    onChange={(e) => setPrivateVentEnabled(e.target.checked)}
                 />
-                <label htmlFor="privateVent" className="text-sm text-amber-800 font-medium cursor-pointer select-none">
-                    Private Vent Mode — for laughs only, never sent to clients
-                </label>
+                <div className="flex flex-col">
+                    <label htmlFor="privateVent" className="text-sm text-amber-800 font-medium cursor-pointer select-none">
+                        Private Vent Mode — for laughs only, never sent to clients
+                    </label>
+                    <p className="text-[10px] text-amber-600 mt-0.5 font-semibold uppercase tracking-wider">Applies on next analysis.</p>
+                </div>
             </div>
 
             <button 

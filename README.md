@@ -1,73 +1,85 @@
-# React + TypeScript + Vite
+# ScopeGuard AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**AI Revenue Shield for Freelancers & Small Agencies**
 
-Currently, two official plugins are available:
+ScopeGuard AI helps freelancers stop working for free by comparing new client requests against the original project scope, detecting scope creep, identifying missing clarifications, suggesting fair change quotes, and drafting professional replies.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tagline
 
-## React Compiler
+Stop working for free. Turn client requests into clear boundaries, fair quotes, and professional replies.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Demo Flow
 
-## Expanding the ESLint configuration
+1. Select an active project.
+2. Review the saved original scope.
+3. Paste a client request.
+4. Choose a reply tone.
+5. Enable or disable Private Vent Mode.
+6. Click **Analyze Request & Protect Revenue**.
+7. Review scope risk, AI confidence, evidence highlights, clarification chips, suggested quote, timeline impact, and smart replies.
+8. Copy the preferred client-ready response.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## AI Implementation
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+ScopeGuard uses an LLM to perform semantic comparison between the original scope and a new client request. It identifies in-scope and out-of-scope items, extracts missing clarifications, estimates scope creep risk and confidence, suggests pricing and timeline changes, and generates tone-aware business replies.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Unlike a general-purpose chatbot, ScopeGuard is built around a freelancer-specific revenue protection workflow. It remembers the project scope, maps every new request against that agreement, highlights evidence, suggests a structured change quote, and generates one-click professional replies.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Built During HackOnVibe
+
+- Single-page React/Tailwind demo app
+- Project memory with saved scope examples
+- Client request analyzer
+- Claude-powered scope comparison API
+- Risk and confidence meter
+- Evidence highlights
+- Missing clarification chips
+- Suggested change quote
+- Timeline impact
+- Private Vent Mode
+- Smart reply generator
+- ROI card
+- Discord validation CTA
+
+## Tech Stack
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Vercel Functions
+- Claude API via `@anthropic-ai/sdk`
+- Vitest
+
+## Environment Variables
+
+Create a local `.env` file:
+
+```bash
+ANTHROPIC_API_KEY=your_key_here
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+For Vercel deployment, add `ANTHROPIC_API_KEY` in Project Settings → Environment Variables.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Local Development
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Test
+
+```bash
+npm test
+```
+
+## Disclaimer
+
+ScopeGuard helps with business communication and scope analysis. It does not provide legal advice.

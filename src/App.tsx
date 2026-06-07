@@ -3,29 +3,113 @@ import Header from './components/Header';
 import InputColumn from './components/InputColumn';
 import OutputColumn from './components/OutputColumn';
 import { projects, getMockAnalysis } from './data/mockData';
-import type { AnalysisResult, ReplyTone } from './data/mockData';
+import type { AnalysisResult } from './types/analysis';
+
+async function analyzeWithApi({
+  originalScope,
+  clientRequest,
+  tone,
+  privateVentEnabled,
+}: {
+  originalScope: string;
+  clientRequest: string;
+  tone: string;
+  privateVentEnabled: boolean;
+}) {
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      originalScope,
+      clientRequest,
+      tone,
+      privateVentEnabled,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    throw new Error(errorBody?.error || 'Failed to analyze request');
+  }
+
+  return response.json();
+}
 
 export default function App() {
-    const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(null);
+    const defaultProject = projects[0];
+    
+    const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(() =>
+        getMockAnalysis(defaultProject.id, {
+            request: defaultProject.demoClientRequest,
+            tone: 'Friendly',
+        })
+    );
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [showPrivateVent, setShowPrivateVent] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isLiveApi, setIsLiveApi] = useState(false);
 
-    const handleAnalyze = (projectId: string, request: string, tone: ReplyTone, privateVent: boolean) => {
-        setIsAnalyzing(true);
-        setShowPrivateVent(privateVent);
+    const handleAnalyze = async (payload: {
+      projectId: string;
+      request: string;
+      tone: string;
+      privateVentEnabled: boolean;
+    }) => {
+      setIsAnalyzing(true);
+      setError(null);
+      setShowPrivateVent(payload.privateVentEnabled);
+    
+      const project = projects.find((item) => item.id === payload.projectId);
+    
+      if (!project) {
+        setError('Project not found.');
+        setIsAnalyzing(false);
+        return;
+      }
+    
+      try {
+        const originalScopeText = `Project: ${project.name}\nPrice: ${project.price}\n\nIncluded:\n- ${project.included.join('\n- ')}\n\nExcluded:\n- ${project.excluded.join('\n- ')}\n\nAdditional Work: ${project.additionalWork}`;
         
-        // Simulate network delay to mimic AI processing
-        setTimeout(() => {
-            const data = getMockAnalysis(projectId, { request, tone });
-            setAnalysisData(data);
-            setIsAnalyzing(false);
-        }, 1500);
+        const data = await analyzeWithApi({
+          originalScope: originalScopeText,
+          clientRequest: payload.request,
+          tone: payload.tone,
+          privateVentEnabled: payload.privateVentEnabled,
+        });
+    
+        setAnalysisData(data);
+        setIsLiveApi(true);
+      } catch (err) {
+        console.error(err);
+    
+        const fallback = getMockAnalysis(payload.projectId, {
+          request: payload.request,
+          tone: payload.tone as any,
+        });
+    
+        setAnalysisData({
+          ...fallback,
+          summary: `${fallback.summary} Demo fallback is shown because live AI analysis failed.`,
+        });
+    
+        setError('Live AI analysis failed. Showing demo fallback so the product flow remains available.');
+        setIsLiveApi(false);
+      } finally {
+        setIsAnalyzing(false);
+      }
     };
 
     return (
         <div className="min-h-screen flex flex-col font-sans">
             <Header />
             <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+                {error && (
+                    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        {error}
+                    </div>
+                )}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 h-full">
                     {/* Left Column */}
                     <div className="lg:sticky lg:top-8 h-fit">
@@ -41,6 +125,7 @@ export default function App() {
                         <OutputColumn 
                             data={analysisData} 
                             showPrivateVent={showPrivateVent} 
+                            isLiveApi={isLiveApi}
                         />
                     </div>
                 </div>

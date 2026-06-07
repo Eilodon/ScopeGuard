@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { ShieldAlert, AlertCircle, FileWarning, HelpCircle, DollarSign, MessageSquare, ExternalLink, Copy, CheckCircle } from 'lucide-react';
-import type { AnalysisResult, ReplyTabId } from '../data/mockData';
+import type { AnalysisResult } from '../types/analysis';
+import type { ReplyTabId } from '../data/mockData';
 
 interface OutputColumnProps {
     data: AnalysisResult | null;
     showPrivateVent: boolean;
+    isLiveApi?: boolean;
 }
 
 const replyTabs: Array<{ id: ReplyTabId; label: string }> = [
@@ -13,7 +15,7 @@ const replyTabs: Array<{ id: ReplyTabId; label: string }> = [
     { id: 'follow_up', label: 'Follow-up' }
 ];
 
-export default function OutputColumn({ data, showPrivateVent }: OutputColumnProps) {
+export default function OutputColumn({ data, showPrivateVent, isLiveApi = false }: OutputColumnProps) {
     const [activeTab, setActiveTab] = useState<ReplyTabId>('friendly_upsell');
     const [copiedType, setCopiedType] = useState<'reply' | 'discord' | null>(null);
 
@@ -40,17 +42,28 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
     const riskBar = isHighRisk ? 'bg-red-500' : 'bg-amber-500';
 
     return (
-        <div className="flex flex-col gap-6 h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex flex-col gap-6 h-full animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
+            <div className="absolute -top-3 right-4 z-10">
+                {isLiveApi ? (
+                    <span className="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-200 shadow-sm">
+                        Live AI analysis
+                    </span>
+                ) : (
+                    <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">
+                        Demo sample loaded. Click Analyze to run live AI.
+                    </span>
+                )}
+            </div>
+
             {/* Risk Meter */}
             <div className={`p-5 rounded-xl border shadow-sm ${riskBg}`}>
                 <div className="flex justify-between items-center mb-3">
                     <h2 className={`text-xl font-bold ${riskColor} flex items-center gap-2`}>
                         <AlertCircle className="w-6 h-6" />
-                        {data.risk_score_percentage}% {isHighRisk ? 'High Risk' : 'Medium Risk'}
+                        <span>
+                            {data.risk_score_percentage}% {isHighRisk ? 'High Risk' : 'Medium Risk'} <span className="text-sm opacity-70">· {data.confidence_score_percentage}% AI Confidence</span>
+                        </span>
                     </h2>
-                    <span className="text-xs font-semibold text-slate-500 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-200/50">
-                        {data.confidence_score_percentage}% AI Confidence
-                    </span>
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-2.5 mb-4 overflow-hidden">
                     <div className={`${riskBar} h-2.5 rounded-full`} style={{ width: `${data.risk_score_percentage || 0}%` }}></div>
@@ -78,7 +91,7 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                             </div>
                             <div className="flex-none">
                                 <span className="inline-block px-2.5 py-1 text-[10px] font-black text-red-700 bg-red-100 rounded uppercase tracking-widest">
-                                    {item.assessment.replace('_', ' ')}
+                                    {item.assessment.replace(/_/g, ' ')}
                                 </span>
                             </div>
                         </div>
@@ -95,14 +108,14 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                 <div className="flex flex-wrap gap-2">
                     {data.missing_clarifications.map((chip, i) => (
                         <span key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-full border border-indigo-100">
-                            {chip}?
+                            {chip.endsWith('?') ? chip : `${chip}?`}
                         </span>
                     ))}
                 </div>
             </div>
 
             {/* Private Vent */}
-            {showPrivateVent && data.private_vent_roast && (
+            {showPrivateVent && data.private_vent_roast && data.private_vent_roast.trim() !== '' && (
                 <div className="p-5 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-1.5 bg-amber-200 rounded-bl-lg">
                         <span className="text-[9px] font-black text-amber-800 uppercase tracking-widest block px-1">Internal Only</span>
@@ -149,10 +162,17 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
 
             {/* Smart Replies */}
             <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-sm flex flex-col flex-1">
-                <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-blue-500" />
-                    Smart Replies
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-blue-500" />
+                        Smart Replies
+                    </h3>
+                    {data.selected_tone && (
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                            Tone: {data.selected_tone}
+                        </span>
+                    )}
+                </div>
                 <div className="flex gap-2 border-b border-slate-100 mb-4 overflow-x-auto pb-2">
                     {replyTabs.map(tab => (
                         <button
@@ -178,6 +198,22 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                     </button>
                 </div>
             </div>
+
+            {/* Why not just ChatGPT? Card */}
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Why not just ChatGPT?
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-slate-900">
+                    Built for one revenue-protection workflow
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                    ScopeGuard remembers the project scope, maps each new client request against
+                    that agreement, highlights evidence, identifies missing clarifications,
+                    suggests a structured quote and timeline impact, and generates one-click
+                    professional replies.
+                </p>
+            </section>
 
             {/* Community CTA */}
             <div className="p-4 rounded-xl border border-indigo-100 bg-indigo-50 flex flex-col sm:flex-row items-center justify-between gap-4 mt-2 shadow-sm">
