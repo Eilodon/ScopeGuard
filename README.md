@@ -49,7 +49,7 @@ Unlike a general-purpose chatbot, ScopeGuard is built around a freelancer-specif
 - Vite
 - Tailwind CSS
 - Vercel Functions
-- Claude API via `@anthropic-ai/sdk`
+- Gemini API via `@google/generative-ai`
 - Vitest
 
 ## Environment Variables
@@ -57,10 +57,10 @@ Unlike a general-purpose chatbot, ScopeGuard is built around a freelancer-specif
 Create a local `.env` file:
 
 ```bash
-ANTHROPIC_API_KEY=your_key_here
+GEMINI_API_KEY=your_key_here
 ```
 
-For Vercel deployment, add `ANTHROPIC_API_KEY` in Project Settings → Environment Variables.
+For Vercel deployment, add `GEMINI_API_KEY` in Project Settings → Environment Variables.
 
 ## Local Development
 
@@ -81,7 +81,7 @@ npx vercel dev
 Make sure `.env` includes:
 
 ```bash
-ANTHROPIC_API_KEY=your_key_here
+GEMINI_API_KEY=your_key_here
 ```
 
 ## Build
