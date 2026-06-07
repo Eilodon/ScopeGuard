@@ -39,34 +39,37 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
     };
 
     return (
-        <div className="flex flex-col gap-6 p-6 bg-white rounded-xl shadow-sm border border-slate-200 h-full">
+        <div className="flex flex-col gap-6 p-6 bg-slate-900/40 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 h-full transition-all duration-300 hover:border-white/20">
             <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Select Active Project</label>
+                <label htmlFor="projectSelect" className="block text-sm font-semibold text-slate-300 mb-2">Select Active Project</label>
                 <select 
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    id="projectSelect"
+                    className="w-full p-3 bg-slate-950/50 border border-white/10 rounded-xl text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 focus:outline-none transition-all"
                     value={selectedProject}
                     onChange={(e) => handleProjectChange(e.target.value)}
                 >
                     {projects.map(p => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
+                        <option key={p.id} value={p.id} className="bg-slate-900">{p.name}</option>
                     ))}
                 </select>
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Original Scope of Work</label>
-                <p className="text-xs text-slate-500 mb-2">Paste your original scope, proposal, contract, or simply describe what you agreed to deliver.</p>
+                <label htmlFor="originalScope" className="block text-sm font-semibold text-slate-300 mb-1">Original Scope of Work</label>
+                <p className="text-xs text-slate-500 mb-3">Paste your original scope, proposal, contract, or simply describe what you agreed to deliver.</p>
                 <textarea 
+                    id="originalScope"
                     readOnly
-                    className="w-full h-40 p-3 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 text-sm focus:outline-none resize-none"
+                    className="w-full h-40 p-4 bg-slate-950/30 border border-white/5 rounded-xl text-slate-400 text-sm focus:outline-none resize-none custom-scrollbar"
                     value={originalScopeText}
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Paste Client Request</label>
+                <label htmlFor="clientRequest" className="block text-sm font-semibold text-slate-300 mb-2">Paste Client Request</label>
                 <textarea 
-                    className="w-full h-24 p-3 bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"
+                    id="clientRequest"
+                    className="w-full h-28 p-4 bg-slate-950/50 border border-white/10 rounded-xl text-slate-200 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 focus:outline-none resize-none transition-all placeholder:text-slate-600 custom-scrollbar shadow-inner"
                     placeholder="Can you also add a payment page, rewrite the copy, and create 3 banners? Should be quick."
                     value={clientRequest}
                     onChange={(e) => setClientRequest(e.target.value)}
@@ -75,39 +78,40 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
 
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Reply Tone</label>
+                    <label htmlFor="replyTone" className="block text-sm font-semibold text-slate-300 mb-2">Reply Tone</label>
                     <select 
-                        className="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        id="replyTone"
+                        className="w-full p-3 bg-slate-950/50 border border-white/10 rounded-xl text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 focus:outline-none transition-all"
                         value={tone}
                         onChange={(e) => setTone(e.target.value as ReplyTone)}
                     >
-                        <option value="Friendly">Friendly</option>
-                        <option value="Firm">Firm</option>
-                        <option value="Diplomatic">Diplomatic</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Short">Short</option>
+                        <option value="Friendly" className="bg-slate-900">Friendly</option>
+                        <option value="Firm" className="bg-slate-900">Firm</option>
+                        <option value="Diplomatic" className="bg-slate-900">Diplomatic</option>
+                        <option value="Premium" className="bg-slate-900">Premium</option>
+                        <option value="Short" className="bg-slate-900">Short</option>
                     </select>
                 </div>
             </div>
 
-            <div className="flex items-start gap-3 bg-amber-50 p-3 rounded-lg border border-amber-100">
+            <div className="flex items-start gap-3 bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 backdrop-blur-sm transition-colors hover:bg-amber-500/15">
                 <input 
                     type="checkbox" 
                     id="privateVent"
-                    className="w-4 h-4 mt-0.5 text-amber-600 rounded focus:ring-amber-500"
+                    className="w-4 h-4 mt-0.5 text-amber-500 bg-slate-900 border-amber-500/50 rounded focus:ring-amber-500/50 focus:ring-offset-slate-900"
                     checked={privateVentEnabled}
                     onChange={(e) => setPrivateVentEnabled(e.target.checked)}
                 />
                 <div className="flex flex-col">
-                    <label htmlFor="privateVent" className="text-sm text-amber-800 font-medium cursor-pointer select-none">
+                    <label htmlFor="privateVent" className="text-sm text-amber-400 font-medium cursor-pointer select-none">
                         Private Vent Mode — for laughs only, never sent to clients
                     </label>
-                    <p className="text-[10px] text-amber-600 mt-0.5 font-semibold uppercase tracking-wider">Applies on next analysis.</p>
+                    <p className="text-[10px] text-amber-500/70 mt-1 font-bold uppercase tracking-widest">Applies on next analysis.</p>
                 </div>
             </div>
 
             <button 
-                className={`mt-2 w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow-sm transition-colors flex justify-center items-center gap-2 ${isAnalyzing ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`mt-4 w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 flex justify-center items-center gap-2 ${isAnalyzing ? 'opacity-70 cursor-not-allowed scale-95' : ''}`}
                 onClick={handleAnalyze}
                 disabled={isAnalyzing}
             >

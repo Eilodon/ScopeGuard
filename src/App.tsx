@@ -102,9 +102,16 @@ export default function App() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col font-sans">
-            <Header />
-            <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <div className="min-h-screen flex flex-col font-sans bg-slate-950 text-slate-300 relative selection:bg-indigo-500/30 selection:text-indigo-200">
+            {/* Background Effects */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-900/20 blur-[120px]"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-violet-900/10 blur-[150px]"></div>
+            </div>
+            
+            <div className="relative z-10 flex flex-col h-full min-h-screen">
+                <Header />
+                <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
                 {error && (
                     <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
                         {error}
@@ -130,6 +137,7 @@ export default function App() {
                     </div>
                 </div>
             </main>
+            </div>
         </div>
     );
 }
