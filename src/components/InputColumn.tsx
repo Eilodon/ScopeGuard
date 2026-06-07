@@ -8,6 +8,7 @@ interface InputColumnProps {
         request: string;
         tone: ReplyTone;
         privateVentEnabled: boolean;
+        customScope?: string;
     }) => void;
     isAnalyzing: boolean;
 }
@@ -17,26 +18,37 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
     const [clientRequest, setClientRequest] = useState(projects[0]?.demoClientRequest || '');
     const [tone, setTone] = useState<ReplyTone>('Friendly');
     const [privateVentEnabled, setPrivateVentEnabled] = useState(false);
+    const [customScopeText, setCustomScopeText] = useState('');
 
     const activeProject = projects.find(p => p.id === selectedProject);
 
     const handleProjectChange = (projectId: string) => {
         setSelectedProject(projectId);
-        setClientRequest(projects.find((project) => project.id === projectId)?.demoClientRequest || '');
+        if (projectId === 'custom') {
+            setClientRequest('');
+        } else {
+            setClientRequest(projects.find((project) => project.id === projectId)?.demoClientRequest || '');
+        }
     };
 
-    const originalScopeText = activeProject 
+    const isCustom = selectedProject === 'custom';
+
+    const originalScopeValue = isCustom 
+        ? customScopeText 
+        : activeProject 
         ? `Project: ${activeProject.name}\nPrice: ${activeProject.price}\n\nIncluded:\n- ${activeProject.included.join('\n- ')}\n\nExcluded:\n- ${activeProject.excluded.join('\n- ')}\n\nAdditional Work: ${activeProject.additionalWork}`
         : '';
 
     const isRequestEmpty = clientRequest.trim().length === 0;
+    const isScopeEmpty = isCustom && customScopeText.trim().length === 0;
 
     const handleAnalyze = () => {
         onAnalyze({
             projectId: selectedProject,
             request: clientRequest,
             tone,
-            privateVentEnabled
+            privateVentEnabled,
+            customScope: isCustom ? customScopeText : undefined
         });
     };
 
@@ -53,6 +65,7 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                     {projects.map(p => (
                         <option key={p.id} value={p.id} className="bg-slate-900">{p.name}</option>
                     ))}
+                    <option value="custom" className="bg-slate-900">Custom Project (Paste your own)</option>
                 </select>
             </div>
 
@@ -61,9 +74,13 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                 <p className="text-xs text-slate-500 mb-3">Paste your original scope, proposal, contract, or simply describe what you agreed to deliver.</p>
                 <textarea 
                     id="originalScope"
-                    readOnly
-                    className="w-full h-40 p-4 bg-slate-950/30 border border-white/5 rounded-xl text-slate-400 text-sm focus:outline-none resize-none custom-scrollbar"
-                    value={originalScopeText}
+                    readOnly={!isCustom}
+                    className={`w-full h-40 p-4 border rounded-xl text-sm focus:outline-none resize-none custom-scrollbar transition-all ${isCustom ? 'bg-slate-950/50 border-white/10 text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 shadow-inner' : 'bg-slate-950/30 border-white/5 text-slate-400'}`}
+                    value={originalScopeValue}
+                    onChange={(e) => {
+                        if (isCustom) setCustomScopeText(e.target.value);
+                    }}
+                    placeholder={isCustom ? "Paste your project scope, proposal, or contract here..." : ""}
                 />
             </div>
 
@@ -113,9 +130,9 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
             </div>
 
             <button 
-                className={`mt-4 w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 flex justify-center items-center gap-2 ${isAnalyzing || isRequestEmpty ? 'opacity-70 cursor-not-allowed scale-95' : ''}`}
+                className={`mt-4 w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 flex justify-center items-center gap-2 ${isAnalyzing || isRequestEmpty || isScopeEmpty ? 'opacity-70 cursor-not-allowed scale-95' : ''}`}
                 onClick={handleAnalyze}
-                disabled={isAnalyzing || isRequestEmpty}
+                disabled={isAnalyzing || isRequestEmpty || isScopeEmpty}
             >
                 {isAnalyzing ? (
                     <span className="flex items-center gap-2">
@@ -129,9 +146,9 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                     "Analyze Request & Protect Revenue"
                 )}
             </button>
-            {isRequestEmpty && (
+            {(isRequestEmpty || isScopeEmpty) && (
                 <p className="mt-2 text-xs text-amber-400">
-                    Paste a client request before running analysis.
+                    {isScopeEmpty ? 'Provide your custom scope to continue.' : 'Paste a client request before running analysis.'}
                 </p>
             )}
         </div>

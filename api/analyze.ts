@@ -240,7 +240,7 @@ Generate the ScopeGuard analysis as valid JSON only.
 
     const message = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-latest',
-      max_tokens: 1800,
+      max_tokens: 2500,
       temperature: 0.2,
       system: SYSTEM_PROMPT,
       messages: [

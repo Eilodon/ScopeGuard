@@ -57,22 +57,26 @@ export default function App() {
       request: string;
       tone: ReplyTone;
       privateVentEnabled: boolean;
+      customScope?: string;
     }) => {
       setIsAnalyzing(true);
       setError(null);
       setShowPrivateVent(payload.privateVentEnabled);
     
-      const project = projects.find((item) => item.id === payload.projectId);
-    
-      if (!project) {
-        setError('Project not found.');
-        setIsAnalyzing(false);
-        return;
+      let originalScopeText: string;
+      if (payload.projectId === 'custom') {
+          originalScopeText = payload.customScope || '';
+      } else {
+          const project = projects.find((item) => item.id === payload.projectId);
+          if (!project) {
+              setError('Project not found.');
+              setIsAnalyzing(false);
+              return;
+          }
+          originalScopeText = `Project: ${project.name}\nPrice: ${project.price}\n\nIncluded:\n- ${project.included.join('\n- ')}\n\nExcluded:\n- ${project.excluded.join('\n- ')}\n\nAdditional Work: ${project.additionalWork}`;
       }
-    
-      try {
-        const originalScopeText = `Project: ${project.name}\nPrice: ${project.price}\n\nIncluded:\n- ${project.included.join('\n- ')}\n\nExcluded:\n- ${project.excluded.join('\n- ')}\n\nAdditional Work: ${project.additionalWork}`;
         
+      try {
         const data = await analyzeWithApi({
           originalScope: originalScopeText,
           clientRequest: payload.request,

@@ -96,7 +96,7 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
             <div className="p-6 rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-md shadow-lg hover:border-white/20 transition-all">
                 <h3 className="text-sm font-bold text-slate-200 mb-5 flex items-center gap-2 font-heading tracking-wide">
                     <FileWarning className="w-4 h-4 text-slate-400" />
-                    Why this is out of scope
+                    {data.scope_status === 'in_scope' ? 'Evidence highlights' : 'Why this is out of scope'}
                 </h3>
                 <div className="flex flex-col gap-3">
                     {data.evidence_highlights.length > 0 ? (
@@ -254,7 +254,7 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
                     Got an awkward client message? Test it and share your result in Discord.
                 </p>
                 <button 
-                    onClick={() => handleCopy(`⚠️ Scope creep risk: ${data.risk_score_percentage}%\n💸 Suggested change quote: ${data.suggested_change_quote.label}\nBest reply angle: Friendly upsell\n\nPrivate Vent:\n"${data.private_vent_roast}"\n\nProfessional reply:\n${data.smart_replies.friendly_upsell}`, 'discord')}
+                    onClick={() => handleCopy(`⚠️ Scope creep risk: ${data.risk_score_percentage}%\n💸 Suggested change quote: ${data.suggested_change_quote.label}\nBest reply angle: Friendly upsell${showPrivateVent && data.private_vent_roast ? `\n\nPrivate Vent:\n"${data.private_vent_roast}"` : ''}\n\nProfessional reply:\n${data.smart_replies.friendly_upsell}`, 'discord')}
                     className="flex-none px-5 py-3 bg-indigo-600 border border-indigo-500 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-lg"
                 >
                     {copiedType === 'discord' ? (
