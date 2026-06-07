@@ -1,7 +1,0 @@
-INIT_DATE: 2026-06-07
-INIT_VERSION: super-skills-v2
-GIT_ROOT: /home/ybao/Downloads/ScopeGuard
-HARNESS: opencode
-TASK_TOOL: YES
-ARTIFACTS_API: NO
-STATUS: READY
