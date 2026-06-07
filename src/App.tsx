@@ -83,6 +83,7 @@ export default function App() {
         setAnalysisData(data);
         setIsLiveApi(true);
       } catch {
+        setError('Live AI analysis is unavailable right now. Showing a demo-safe fallback.');
         const fallback = getMockAnalysis(payload.projectId, {
           request: payload.request,
           tone: payload.tone,

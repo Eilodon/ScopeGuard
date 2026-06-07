@@ -82,7 +82,7 @@ export const projects: Project[] = [
     },
     {
         id: "apple-clone",
-        name: "Basic Website Setup",
+        name: "Extreme Scope Creep Demo",
         price: "$1,200",
         included: [
             "5-page static website",
@@ -99,7 +99,7 @@ export const projects: Project[] = [
             "Content writing"
         ],
         additionalWork: "$150/hour or fixed quote after review.",
-        demoClientRequest: "Hey man — quick small update, shouldn’t be a big deal.\n\nI was showing the site to my cousin (he does a bit of coding), and he mentioned this should all be pretty straightforward.\n\nCan you just:\n• Make it look exactly like Apple’s site but more unique\n• Add full payment system + subscriptions + coupons + referral logic\n• Build user + admin dashboards (with analytics, exports, etc.)\n• Rewrite all the content (keep it premium but also relatable and viral)\n• Add smooth animations everywhere (but make sure it loads instantly)\n• Set up SEO so we rank top 3 on Google\n• Integrate WhatsApp, email automation, and an AI chatbot\n• Also maybe turn this into an app later, so keep that in mind while building\n\nLet’s try to wrap this up by tomorrow evening — I have an important demo.\n\nAlso, since most of this is just small tweaks and improvements, let’s keep the budget the same for now. We’ll definitely do more work together after this if it goes well 👍"
+        demoClientRequest: "Hey man — quick small update, shouldn’t be a big deal.\n\nI was showing the site to my cousin (he does a bit of coding), and he mentioned this should all be pretty straightforward.\n\nCan you just:\n• Make it look exactly like a premium tech brand’s site but more unique\n• Add full payment system + subscriptions + coupons + referral logic\n• Build user + admin dashboards (with analytics, exports, etc.)\n• Rewrite all the content (keep it premium but also relatable and viral)\n• Add smooth animations everywhere (but make sure it loads instantly)\n• Set up SEO so we rank top 3 on Google\n• Integrate WhatsApp, email automation, and an AI chatbot\n• Also maybe turn this into an app later, so keep that in mind while building\n\nLet’s try to wrap this up by tomorrow evening — I have an important demo.\n\nAlso, since most of this is just small tweaks and improvements, let’s keep the budget the same for now. We’ll definitely do more work together after this if it goes well 👍"
     }
 ];
 

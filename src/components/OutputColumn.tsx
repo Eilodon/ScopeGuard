@@ -19,9 +19,12 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
     const [activeTab, setActiveTab] = useState<ReplyTabId>('friendly_upsell');
     const [copiedType, setCopiedType] = useState<'reply' | 'discord' | null>(null);
 
-    const handleCopy = (text: string, type: 'reply' | 'discord') => {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text);
+    const handleCopy = async (text: string, type: 'reply' | 'discord') => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopiedType(type);
+            setTimeout(() => setCopiedType(null), 2000);
+        } catch {
             setCopiedType(type);
             setTimeout(() => setCopiedType(null), 2000);
         }
@@ -96,24 +99,30 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
                     Why this is out of scope
                 </h3>
                 <div className="flex flex-col gap-3">
-                    {data.evidence_highlights.map((item, i) => (
-                        <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 bg-slate-950/50 rounded-xl text-sm border border-white/5 hover:bg-slate-900/80 transition-colors">
-                            <div className="flex-1">
-                                <span className="text-slate-500 text-[10px] uppercase tracking-widest font-bold block mb-1.5">Client requested</span>
-                                <span className="font-medium text-slate-200">{item.client_requested}</span>
+                    {data.evidence_highlights.length > 0 ? (
+                        data.evidence_highlights.map((item, i) => (
+                            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 bg-slate-950/50 rounded-xl text-sm border border-white/5 hover:bg-slate-900/80 transition-colors">
+                                <div className="flex-1">
+                                    <span className="text-slate-500 text-[10px] uppercase tracking-widest font-bold block mb-1.5">Client requested</span>
+                                    <span className="font-medium text-slate-200">{item.client_requested}</span>
+                                </div>
+                                <div className="hidden sm:block text-slate-600">→</div>
+                                <div className="flex-1">
+                                    <span className="text-slate-500 text-[10px] uppercase tracking-widest font-bold block mb-1.5">Original scope</span>
+                                    <span className="font-medium text-slate-200">{item.original_scope_reference}</span>
+                                </div>
+                                <div className="flex-none mt-2 sm:mt-0">
+                                    <span className="inline-block px-3 py-1 text-[10px] font-black text-rose-300 bg-rose-500/10 border border-rose-500/20 rounded-md uppercase tracking-widest shadow-sm">
+                                        {item.assessment.replace(/_/g, ' ')}
+                                    </span>
+                                </div>
                             </div>
-                            <div className="hidden sm:block text-slate-600">→</div>
-                            <div className="flex-1">
-                                <span className="text-slate-500 text-[10px] uppercase tracking-widest font-bold block mb-1.5">Original scope</span>
-                                <span className="font-medium text-slate-200">{item.original_scope_reference}</span>
-                            </div>
-                            <div className="flex-none mt-2 sm:mt-0">
-                                <span className="inline-block px-3 py-1 text-[10px] font-black text-rose-300 bg-rose-500/10 border border-rose-500/20 rounded-md uppercase tracking-widest shadow-sm">
-                                    {item.assessment.replace(/_/g, ' ')}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <p className="text-sm text-slate-500">
+                            No specific evidence was extracted. Review the request manually before replying.
+                        </p>
+                    )}
                 </div>
             </div>
 
@@ -124,11 +133,17 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
                     Clarifications needed before quoting
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                    {data.missing_clarifications.map((chip, i) => (
-                        <span key={i} className="px-4 py-2 bg-indigo-500/10 text-indigo-300 text-sm font-medium rounded-full border border-indigo-500/20 shadow-sm transition-all hover:bg-indigo-500/20">
-                            {chip.endsWith('?') ? chip : `${chip}?`}
-                        </span>
-                    ))}
+                    {data.missing_clarifications.length > 0 ? (
+                        data.missing_clarifications.map((chip, i) => (
+                            <span key={i} className="px-4 py-2 bg-indigo-500/10 text-indigo-300 text-sm font-medium rounded-full border border-indigo-500/20 shadow-sm transition-all hover:bg-indigo-500/20">
+                                {chip.endsWith('?') ? chip : `${chip}?`}
+                            </span>
+                        ))
+                    ) : (
+                        <p className="text-sm text-slate-500">
+                            No extra clarifications detected.
+                        </p>
+                    )}
                 </div>
             </div>
 

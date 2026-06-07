@@ -29,6 +29,8 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
         ? `Project: ${activeProject.name}\nPrice: ${activeProject.price}\n\nIncluded:\n- ${activeProject.included.join('\n- ')}\n\nExcluded:\n- ${activeProject.excluded.join('\n- ')}\n\nAdditional Work: ${activeProject.additionalWork}`
         : '';
 
+    const isRequestEmpty = clientRequest.trim().length === 0;
+
     const handleAnalyze = () => {
         onAnalyze({
             projectId: selectedProject,
@@ -111,9 +113,9 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
             </div>
 
             <button 
-                className={`mt-4 w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 flex justify-center items-center gap-2 ${isAnalyzing ? 'opacity-70 cursor-not-allowed scale-95' : ''}`}
+                className={`mt-4 w-full py-4 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 flex justify-center items-center gap-2 ${isAnalyzing || isRequestEmpty ? 'opacity-70 cursor-not-allowed scale-95' : ''}`}
                 onClick={handleAnalyze}
-                disabled={isAnalyzing}
+                disabled={isAnalyzing || isRequestEmpty}
             >
                 {isAnalyzing ? (
                     <span className="flex items-center gap-2">
@@ -127,6 +129,11 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                     "Analyze Request & Protect Revenue"
                 )}
             </button>
+            {isRequestEmpty && (
+                <p className="mt-2 text-xs text-amber-400">
+                    Paste a client request before running analysis.
+                </p>
+            )}
         </div>
     );
 }
