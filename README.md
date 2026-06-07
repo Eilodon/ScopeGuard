@@ -1,5 +1,6 @@
-# ScopeGuard AI
+![ScopeGuard Logo](public/logo.png)
 
+# ScopeGuard AI
 **AI Revenue Shield for Freelancers & Small Agencies**
 
 ScopeGuard AI helps freelancers stop working for free by comparing new client requests against the original project scope, detecting scope creep, identifying missing clarifications, suggesting fair change quotes, and drafting professional replies.
