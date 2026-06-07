@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { test, expect } from 'vitest';
-import React from 'react';
 import OutputColumn from '../src/components/OutputColumn';
 import { getMockAnalysis } from '../src/data/mockData';
 

@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Header from './components/Header';
 import InputColumn from './components/InputColumn';
 import OutputColumn from './components/OutputColumn';
 import { projects, getMockAnalysis } from './data/mockData';
+import type { AnalysisResult, ReplyTone } from './data/mockData';
 
 export default function App() {
-    const [analysisData, setAnalysisData] = useState<any>(null);
+    const [analysisData, setAnalysisData] = useState<AnalysisResult | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [showPrivateVent, setShowPrivateVent] = useState(false);
 
-    const handleAnalyze = (projectId: string, request: string, tone: string, privateVent: boolean) => {
+    const handleAnalyze = (projectId: string, request: string, tone: ReplyTone, privateVent: boolean) => {
         setIsAnalyzing(true);
         setShowPrivateVent(privateVent);
         
         // Simulate network delay to mimic AI processing
         setTimeout(() => {
-            const data = getMockAnalysis(projectId);
+            const data = getMockAnalysis(projectId, { request, tone });
             setAnalysisData(data);
             setIsAnalyzing(false);
         }, 1500);

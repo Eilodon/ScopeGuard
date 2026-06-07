@@ -1,25 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Project } from '../data/mockData';
+import { useState } from 'react';
+import type { Project, ReplyTone } from '../data/mockData';
 
 interface InputColumnProps {
     projects: Project[];
-    onAnalyze: (projectId: string, request: string, tone: string, privateVent: boolean) => void;
+    onAnalyze: (projectId: string, request: string, tone: ReplyTone, privateVent: boolean) => void;
     isAnalyzing: boolean;
 }
 
 export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputColumnProps) {
     const [selectedProject, setSelectedProject] = useState<string>(projects[0]?.id || '');
-    const [clientRequest, setClientRequest] = useState('');
-    const [tone, setTone] = useState('Friendly');
+    const [clientRequest, setClientRequest] = useState(projects[0]?.demoClientRequest || '');
+    const [tone, setTone] = useState<ReplyTone>('Friendly');
     const [privateVent, setPrivateVent] = useState(false);
 
     const activeProject = projects.find(p => p.id === selectedProject);
 
-    useEffect(() => {
-        if (activeProject) {
-            setClientRequest(activeProject.demoClientRequest);
-        }
-    }, [selectedProject, activeProject]);
+    const handleProjectChange = (projectId: string) => {
+        setSelectedProject(projectId);
+        setClientRequest(projects.find((project) => project.id === projectId)?.demoClientRequest || '');
+    };
 
     const originalScopeText = activeProject 
         ? `Project: ${activeProject.name}\nPrice: ${activeProject.price}\n\nIncluded:\n- ${activeProject.included.join('\n- ')}\n\nExcluded:\n- ${activeProject.excluded.join('\n- ')}\n\nAdditional Work: ${activeProject.additionalWork}`
@@ -36,7 +35,7 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                 <select 
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     value={selectedProject}
-                    onChange={(e) => setSelectedProject(e.target.value)}
+                    onChange={(e) => handleProjectChange(e.target.value)}
                 >
                     {projects.map(p => (
                         <option key={p.id} value={p.id}>{p.name}</option>
@@ -70,7 +69,7 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                     <select 
                         className="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                         value={tone}
-                        onChange={(e) => setTone(e.target.value)}
+                        onChange={(e) => setTone(e.target.value as ReplyTone)}
                     >
                         <option value="Friendly">Friendly</option>
                         <option value="Firm">Firm</option>

@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ShieldAlert, AlertCircle, FileWarning, HelpCircle, DollarSign, MessageSquare, ExternalLink, Copy, CheckCircle } from 'lucide-react';
+import type { AnalysisResult, ReplyTabId } from '../data/mockData';
 
 interface OutputColumnProps {
-    data: any;
+    data: AnalysisResult | null;
     showPrivateVent: boolean;
 }
 
+const replyTabs: Array<{ id: ReplyTabId; label: string }> = [
+    { id: 'friendly_upsell', label: 'Friendly Upsell' },
+    { id: 'firm_pushback', label: 'Firm Pushback' },
+    { id: 'follow_up', label: 'Follow-up' }
+];
+
 export default function OutputColumn({ data, showPrivateVent }: OutputColumnProps) {
-    const [activeTab, setActiveTab] = useState<'friendly_upsell' | 'firm_pushback' | 'follow_up'>('friendly_upsell');
+    const [activeTab, setActiveTab] = useState<ReplyTabId>('friendly_upsell');
     const [copiedType, setCopiedType] = useState<'reply' | 'discord' | null>(null);
 
     const handleCopy = (text: string, type: 'reply' | 'discord') => {
@@ -27,9 +34,10 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
         );
     }
 
-    const riskColor = data.risk_level === 'high' ? 'text-red-600' : 'text-amber-600';
-    const riskBg = data.risk_level === 'high' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200';
-    const riskBar = data.risk_level === 'high' ? 'bg-red-500' : 'bg-amber-500';
+    const isHighRisk = data.risk_level === 'high';
+    const riskColor = isHighRisk ? 'text-red-600' : 'text-amber-600';
+    const riskBg = isHighRisk ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200';
+    const riskBar = isHighRisk ? 'bg-red-500' : 'bg-amber-500';
 
     return (
         <div className="flex flex-col gap-6 h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -38,7 +46,7 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                 <div className="flex justify-between items-center mb-3">
                     <h2 className={`text-xl font-bold ${riskColor} flex items-center gap-2`}>
                         <AlertCircle className="w-6 h-6" />
-                        {data.risk_score_percentage}% {data.risk_level === 'high' ? 'High Risk' : 'Medium Risk'}
+                        {data.risk_score_percentage}% {isHighRisk ? 'High Risk' : 'Medium Risk'}
                     </h2>
                     <span className="text-xs font-semibold text-slate-500 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-200/50">
                         {data.confidence_score_percentage}% AI Confidence
@@ -57,7 +65,7 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                     Why this is out of scope
                 </h3>
                 <div className="flex flex-col gap-3">
-                    {data.evidence_highlights?.map((item: any, i: number) => (
+                    {data.evidence_highlights.map((item, i) => (
                         <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 bg-slate-50 rounded-lg text-sm border border-slate-100">
                             <div className="flex-1">
                                 <span className="text-slate-500 text-[10px] uppercase tracking-wider font-bold block mb-1">Client requested</span>
@@ -85,7 +93,7 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                     Clarifications needed before quoting
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                    {data.missing_clarifications?.map((chip: string, i: number) => (
+                    {data.missing_clarifications.map((chip, i) => (
                         <span key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-full border border-indigo-100">
                             {chip}?
                         </span>
@@ -113,14 +121,14 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                         Suggested Change Quote
                     </h3>
                     <div className="flex items-baseline gap-3 mb-2">
-                        <span className="text-3xl font-black text-emerald-700">{data.suggested_change_quote?.label}</span>
+                        <span className="text-3xl font-black text-emerald-700">{data.suggested_change_quote.label}</span>
                         <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2 py-1 rounded border border-emerald-200">
-                            Timeline: {data.timeline_impact?.label}
+                            Timeline: {data.timeline_impact.label}
                         </span>
                     </div>
                     <p className="text-sm text-emerald-800 mt-4 border-t border-emerald-200/50 pt-3">
                         <span className="font-bold block mb-1 text-xs uppercase tracking-wider text-emerald-600">Reason</span>
-                        {data.suggested_change_quote?.reason}
+                        {data.suggested_change_quote.reason}
                     </p>
                 </div>
 
@@ -146,24 +154,20 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                     Smart Replies
                 </h3>
                 <div className="flex gap-2 border-b border-slate-100 mb-4 overflow-x-auto pb-2">
-                    {[
-                        { id: 'friendly_upsell', label: 'Friendly Upsell' },
-                        { id: 'firm_pushback', label: 'Firm Pushback' },
-                        { id: 'follow_up', label: 'Follow-up' }
-                    ].map(tab => (
+                    {replyTabs.map(tab => (
                         <button
                             key={tab.id}
                             className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors whitespace-nowrap ${activeTab === tab.id ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'}`}
-                            onClick={() => setActiveTab(tab.id as any)}
+                            onClick={() => setActiveTab(tab.id)}
                         >
                             {tab.label}
                         </button>
                     ))}
                 </div>
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex-1 relative group">
-                    <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed font-medium">{data.smart_replies?.[activeTab]}</p>
+                    <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed font-medium">{data.smart_replies[activeTab]}</p>
                     <button 
-                        onClick={() => handleCopy(data.smart_replies?.[activeTab] || '', 'reply')}
+                        onClick={() => handleCopy(data.smart_replies[activeTab], 'reply')}
                         className="absolute top-3 right-3 px-3 py-1.5 bg-white rounded-md border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 shadow-sm opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2"
                     >
                         {copiedType === 'reply' ? (
@@ -181,7 +185,7 @@ export default function OutputColumn({ data, showPrivateVent }: OutputColumnProp
                     Got an awkward client message? Test it and share your result in Discord.
                 </p>
                 <button 
-                    onClick={() => handleCopy(`⚠️ Scope creep risk: ${data.risk_score_percentage}%\n💸 Suggested change quote: ${data.suggested_change_quote?.label}\n🧾 Best reply angle: Friendly upsell\n\nPrivate Vent:\n"${data.private_vent_roast}"\n\nProfessional reply:\n${data.smart_replies?.['friendly_upsell']}`, 'discord')}
+                    onClick={() => handleCopy(`⚠️ Scope creep risk: ${data.risk_score_percentage}%\n💸 Suggested change quote: ${data.suggested_change_quote.label}\nBest reply angle: Friendly upsell\n\nPrivate Vent:\n"${data.private_vent_roast}"\n\nProfessional reply:\n${data.smart_replies.friendly_upsell}`, 'discord')}
                     className="flex-none px-4 py-2 bg-white border border-indigo-200 text-indigo-700 text-sm font-black uppercase tracking-wider rounded-lg hover:bg-indigo-600 hover:text-white transition-colors flex items-center gap-2 shadow-sm"
                 >
                     {copiedType === 'discord' ? (
