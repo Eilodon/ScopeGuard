@@ -62,6 +62,14 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
 
     const riskStyle = riskStyles[data.risk_level] ?? riskStyles.medium;
 
+    const discordShareText = [
+        `⚠️ Scope creep risk: ${data.risk_score_percentage}%`,
+        `💸 Suggested change quote: ${data.suggested_change_quote.label}`,
+        'Best reply angle: Friendly upsell',
+        showPrivateVent && data.private_vent_roast ? `\nPrivate Vent:\n"${data.private_vent_roast}"` : '',
+        `\nProfessional reply:\n${data.smart_replies.friendly_upsell}`,
+    ].filter(Boolean).join('\n');
+
     return (
         <div className="flex flex-col gap-6 h-full animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
             <div className="absolute -top-3 right-4 z-10">
@@ -71,7 +79,7 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
                     </span>
                 ) : (
                     <span className="bg-slate-800/80 text-slate-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-white/10 shadow-sm backdrop-blur-md">
-                        Demo analysis sample
+                        Sample analysis loaded
                     </span>
                 )}
             </div>
@@ -254,7 +262,7 @@ export default function OutputColumn({ data, showPrivateVent, isLiveApi = false 
                     Got an awkward client message? Test it and share your result in Discord.
                 </p>
                 <button 
-                    onClick={() => handleCopy(`⚠️ Scope creep risk: ${data.risk_score_percentage}%\n💸 Suggested change quote: ${data.suggested_change_quote.label}\nBest reply angle: Friendly upsell${showPrivateVent && data.private_vent_roast ? `\n\nPrivate Vent:\n"${data.private_vent_roast}"` : ''}\n\nProfessional reply:\n${data.smart_replies.friendly_upsell}`, 'discord')}
+                    onClick={() => handleCopy(discordShareText, 'discord')}
                     className="flex-none px-5 py-3 bg-indigo-600 border border-indigo-500 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-lg"
                 >
                     {copiedType === 'discord' ? (

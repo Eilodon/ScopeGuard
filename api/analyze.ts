@@ -4,6 +4,15 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+export const config = {
+  maxDuration: 30,
+};
+
+const ANTHROPIC_MODEL = 'claude-sonnet-4-6';
+const MAX_SCOPE_CHARS = 8_000;
+const MAX_REQUEST_CHARS = 3_000;
+const ALLOWED_TONES = new Set(['Friendly', 'Firm', 'Diplomatic', 'Premium', 'Short']);
+
 const SYSTEM_PROMPT = `You are ScopeGuard AI, an expert business communication and revenue protection assistant for freelancers and small agencies.
 
 Your job:
@@ -211,12 +220,30 @@ async function handleAnalyzeRequest(req: Request): Promise<Response> {
 
   try {
     const body = await req.json();
-    const { originalScope, clientRequest, tone, privateVentEnabled } = body;
+    const originalScope = typeof body.originalScope === 'string' ? body.originalScope.trim() : '';
+    const clientRequest = typeof body.clientRequest === 'string' ? body.clientRequest.trim() : '';
+    const rawTone = typeof body.tone === 'string' ? body.tone : 'Friendly';
+    const tone = ALLOWED_TONES.has(rawTone) ? rawTone : 'Friendly';
+    const privateVentEnabled = Boolean(body.privateVentEnabled);
 
     if (!originalScope || !clientRequest) {
       return Response.json(
         { error: 'originalScope and clientRequest are required' },
         { status: 400 },
+      );
+    }
+
+    if (originalScope.length > MAX_SCOPE_CHARS) {
+      return Response.json(
+        { error: `originalScope must be ${MAX_SCOPE_CHARS} characters or fewer` },
+        { status: 413 },
+      );
+    }
+
+    if (clientRequest.length > MAX_REQUEST_CHARS) {
+      return Response.json(
+        { error: `clientRequest must be ${MAX_REQUEST_CHARS} characters or fewer` },
+        { status: 413 },
       );
     }
 
@@ -228,18 +255,18 @@ Client Request:
 ${clientRequest}
 
 Tone:
-${tone || 'Friendly'}
+${tone}
 
 Private Vent Enabled:
-${Boolean(privateVentEnabled)}
+${privateVentEnabled}
 
-The reply tone must be: ${tone || 'Friendly'}. Make all smart replies follow this tone.
+The reply tone must be: ${tone}. Make all smart replies follow this tone.
 
 Generate the ScopeGuard analysis as valid JSON only.
 `;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-latest',
+      model: ANTHROPIC_MODEL,
       max_tokens: 2500,
       temperature: 0.2,
       system: SYSTEM_PROMPT,
@@ -269,8 +296,4 @@ Generate the ScopeGuard analysis as valid JSON only.
 
 export default {
   fetch: handleAnalyzeRequest,
-};
-
-export const config = {
-  maxDuration: 30,
 };

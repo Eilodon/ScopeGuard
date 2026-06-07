@@ -93,7 +93,7 @@ describe('End-to-End Flow: ScopeGuard AI', () => {
         await user.click(analyzeButtons[0]);
 
         await waitFor(() => {
-            expect(screen.getByText('Demo analysis sample')).toBeInTheDocument();
+            expect(screen.getByText('Sample analysis loaded')).toBeInTheDocument();
         });
     });
 });

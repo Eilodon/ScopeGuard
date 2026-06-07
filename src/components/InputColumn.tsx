@@ -92,7 +92,11 @@ export default function InputColumn({ projects, onAnalyze, isAnalyzing }: InputC
                     placeholder="Can you also add a payment page, rewrite the copy, and create 3 banners? Should be quick."
                     value={clientRequest}
                     onChange={(e) => setClientRequest(e.target.value)}
+                    maxLength={3000}
                 />
+                <p className="mt-2 text-[10px] text-slate-500">
+                    {clientRequest.length}/3000 characters
+                </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
